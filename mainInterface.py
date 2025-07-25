@@ -2,23 +2,26 @@ import requests
 import json
 
 
-class modelLogic:
+
+#This class covers the Interface of the LLM and how we will get inputs and outputs to and from the LLM
+class ModelLogic:
 
     def __init__(self,
+                 context, #make this a formatted string please
                  name: str = "User",  # Make sure to give it a name!
                  model: str = "deepseek-r1:32b"
                  ):
 
-        self.name = name
+        self.name = name #name of the agent
 
-        self.system_role = f"""test"""
+        self.context = context #the characters initial background
 
         self.model = model
 
-        self.data = {
+        self.data = { #data structured in JSON that will be sent to the localhost Ollama API.
             "model": self.model,
             "messages": [
-                {"role": "SYSTEM", "content": self.system_role}
+                {"role": "SYSTEM", "content": self.context}
             ],
             "stream": False
         }
@@ -28,6 +31,7 @@ class modelLogic:
             "Content-Type": "application/json"
         }
 
+    #Sends prompt to LLM (needs changes)
     def send_prompt(self, user_input):
         self.data["messages"].append({"role": "user", "content": user_input})
         output = requests.post(self.url, headers=self.headers, data=json.dumps(self.data))
